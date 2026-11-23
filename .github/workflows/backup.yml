@@ -1,0 +1,44 @@
+name: Nightly database backup
+
+# Supabase's free plan has no managed backups. This job dumps the production database every night,
+# encrypts it with age (public key in the repo variable BACKUP_AGE_RECIPIENT), and keeps it as a
+# private workflow artifact for 30 days. It also keeps the free project from auto-pausing.
+# Restore steps: docs/RUNBOOK.md → "Restore a backup".
+on:
+  schedule:
+    - cron: "30 20 * * *" # 02:00 IST
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+    steps:
+      - name: Install PostgreSQL 17 client and age
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17 age
+
+      - name: Dump, compress and encrypt
+        env:
+          DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}
+        run: |
+          set -euo pipefail
+          test -n "$RECIPIENT" || { echo "::error::Set the BACKUP_AGE_RECIPIENT repository variable"; exit 1; }
+          stamp=$(date -u +%Y-%m-%dT%H%M)
+          /usr/lib/postgresql/17/bin/pg_dump "$DATABASE_URL" --format=custom --no-owner --no-privileges \
+            --schema=app --schema=app_private --schema=auth --schema=storage \
+            | age -r "$RECIPIENT" > "bharatyuva-$stamp.dump.age"
+          ls -lh *.dump.age
+          echo "FILE=bharatyuva-$stamp.dump.age" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.FILE }}
+          path: ${{ env.FILE }}
+          retention-days: 30
+          if-no-files-found: error

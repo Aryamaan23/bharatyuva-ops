@@ -1,0 +1,32 @@
+name: Database migrations
+
+# Staging migrates automatically when main changes; production only by manual dispatch, behind the
+# "production" GitHub environment (add required reviewers to it in repo settings).
+on:
+  push:
+    branches: [main]
+    paths: ["drizzle/**"]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Which database"
+        type: choice
+        options: [staging, production]
+        default: staging
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Apply migrations
+        env:
+          # Session pooler / direct connection string, stored as an environment secret.
+          MIGRATION_DATABASE_URL: ${{ secrets.MIGRATION_DATABASE_URL }}
+        run: npx drizzle-kit migrate

@@ -1,0 +1,30 @@
+import type { TemplateTask } from "@/server/db/schema";
+
+/** The planning timeline, in days relative to Day 1 (from the brief). Saved per edition as tasks. */
+export const DEFAULT_TIMELINE: TemplateTask[] = [
+  { title: "Fix dates", offsetDays: -120 },
+  { title: "Update posters", offsetDays: -115 },
+  { title: "Set up application form and tracked links", offsetDays: -110 },
+  { title: "Email Hot partners", offsetDays: -100 },
+  { title: "Send Warm list in batches", offsetDays: -95 },
+  { title: "Call district offices", offsetDays: -90 },
+  { title: "Send Cold list and seek embassy introductions", offsetDays: -85 },
+  { title: "Lock Day 1 partner", offsetDays: -75 },
+  { title: "Lock Day 2 district and nodal officer", offsetDays: -70 },
+  { title: "Lock Day 3 embassy", offsetDays: -65 },
+  { title: "Open applications and send share kits", offsetDays: -60 },
+  { title: "Recruit campus ambassadors", offsetDays: -55 },
+  { title: "List on Unstop, Internshala, LinkedIn Events", offsetDays: -50 },
+  { title: "Deadline reminders", offsetDays: -35 },
+  { title: "Close applications", offsetDays: -30 },
+  { title: "Shortlist", offsetDays: -25 },
+  { title: "Interviews", offsetDays: -18 },
+  { title: "Selection emails", offsetDays: -14 },
+  { title: "Share fellow list and run-of-show with partners", offsetDays: -10 },
+  { title: "Confirm logistics", offsetDays: -7 },
+  { title: "Final briefing", offsetDays: -2 },
+  { title: "Day 1", offsetDays: 0 },
+  { title: "Thank-you notes", offsetDays: 7 },
+  { title: "Publish compendium and impact summary", offsetDays: 21 },
+  { title: "Debrief and update the template", offsetDays: 30 },
+];

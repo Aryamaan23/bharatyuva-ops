@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <body style="font-family: 'Source Sans 3', Arial, sans-serif; color: #1b2440; background: #f6f7fb; padding: 24px">
+    <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 28px; border-top: 6px solid #273661">
+      <h1 style="font-size: 20px; color: #273661; margin: 0 0 12px">Bharat Yuva</h1>
+      <p style="font-size: 16px; line-height: 1.5">Use the button below to sign in. The link works once and expires in one hour.</p>
+      <p style="margin: 24px 0">
+        <a
+          href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}"
+          style="background: #273661; color: #ffffff; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; display: inline-block"
+          >Sign in to Bharat Yuva</a
+        >
+      </p>
+      <p style="font-size: 14px; color: #5a6380">Or enter this code: <strong>{{ .Token }}</strong></p>
+      <p style="font-size: 13px; color: #5a6380">If you didn't ask for this, you can ignore this email.</p>
+      <p style="font-size: 13px; color: #5a6380">Beyond the Classroom</p>
+    </div>
+  </body>
+</html>
